@@ -1,12 +1,8 @@
 import fs from 'fs';
 import path from 'path';
-import OpenAI from 'openai';
 import { conversationRepository } from '../repositories/conversation.repository';
+import { llmClient } from '../llm/client';
 import template from '../prompts/chatbot.txt';
-
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 export interface ChatResponse {
   id: string;
@@ -19,26 +15,28 @@ const parkInfo = fs.readFileSync(
 );
 const instructions = template.replace('{{parkInfo}}', parkInfo);
 
+async function sendMessage(
+  prompt: string,
+  conversationId: string
+): Promise<ChatResponse> {
+  const response = await llmClient.generateText({
+    model: 'gpt-4o-mini',
+    instructions,
+    prompt,
+    temperature: 0.2,
+    maxTokens: 200,
+    previousResponseId:
+      conversationRepository.getLastResponseId(conversationId),
+  });
+
+  conversationRepository.setLastResponseId(conversationId, response.id);
+
+  return {
+    id: response.id,
+    message: response.text,
+  };
+}
+
 export const chatService = {
-  sendMessage: async (
-    prompt: string,
-    conversationId: string
-  ): Promise<ChatResponse> => {
-    const response = await client.responses.create({
-      model: 'gpt-4o-mini',
-      instructions,
-      input: prompt,
-      temperature: 0.2,
-      max_output_tokens: 200,
-      previous_response_id:
-        conversationRepository.getLastResponseId(conversationId),
-    });
-
-    conversationRepository.setLastResponseId(conversationId, response.id);
-
-    return {
-      id: response.id,
-      message: response.output_text,
-    };
-  },
+  sendMessage,
 };

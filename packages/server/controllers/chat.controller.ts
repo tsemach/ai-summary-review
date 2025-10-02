@@ -26,4 +26,14 @@ export const chatController = {
       return res.status(500).json({ error: 'Failed to generate response' });
     }
   },
+
+  // getProductReviews: async (req: Request, res: Response) => {
+  //   const productId = Number(req.params.id);
+
+  //   if (isNaN(productId)) {
+  //     return res.status(400).json({ error: 'Invalid product ID' });
+  //   }
+
+  //   return await chatService.getProductReviews(productId);
+  // }
 };
