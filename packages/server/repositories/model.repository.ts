@@ -24,6 +24,7 @@ function getCurrentModel() {
 }
 
 function setCurrentModel(modelValue: string) {
+  console.log('Setting current model to:', modelValue);
   const model = models.find((m) => m.value === modelValue);
   if (model) {
     currentModel = { ...model };

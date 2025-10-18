@@ -62,25 +62,31 @@ export function ModelSelector({ className }: ModelSelectorProps) {
 
   const currentModelMutation = useMutation({
     mutationFn: (modelValue: string) => reviewsApi.setCurrentModel(modelValue),
+    onSuccess(data) {
+      console.log('Model set to:', data);
+      if (data?.value && !value) {
+        setValue(data.value);
+      }
+    },
   });
 
-  React.useEffect(() => {
-    if (currentModelMutation.isSuccess && currentModelMutation.data) {
-      const data = currentModelMutation.data as Model;
-      const newValue = data.value ?? data.label ?? '';
+  // React.useEffect(() => {
+  //   if (currentModelMutation.isSuccess && currentModelMutation.data) {
+  //     const data = currentModelMutation.data as Model;
+  //     const newValue = data.value ?? data.label ?? '';
 
-      if (newValue) {
-        setValue(newValue);
-      }
-      setOpen(false);
-    }
-  }, [currentModelMutation.isSuccess, currentModelMutation.data]);
+  //     if (newValue) {
+  //       setValue(newValue);
+  //     }
+  //     setOpen(false);
+  //   }
+  // }, [currentModelMutation.isSuccess, currentModelMutation.data]);
 
-  React.useEffect(() => {
-    if (currentModelQuery.data?.value && !value) {
-      setValue(currentModelQuery.data.value);
-    }
-  }, [currentModelQuery.data?.value, value]);
+  // React.useEffect(() => {
+  //   if (currentModelQuery.data?.value && !value) {
+  //     setValue(currentModelQuery.data.value);
+  //   }
+  // }, [currentModelQuery.data?.value, value]);
 
   if (modlesQuery.isLoading || currentModelQuery.isLoading) {
     return (
