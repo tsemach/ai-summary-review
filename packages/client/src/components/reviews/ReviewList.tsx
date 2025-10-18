@@ -4,6 +4,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { Button } from '../ui/Button';
 import ReviewSkeleton from './ReviewSkeleton';
 import { reviewsApi, type GetReviewsResponse } from './reviewsApi';
+import { ModelSelector } from './ModelSelector';
 
 type Props = {
   productId: number;
@@ -43,31 +44,35 @@ const ReviewList = ({ productId }: Props) => {
   return (
     <div>
       <div className="mb-5">
-        {currentSummary ? (
-          <p>{currentSummary}</p>
-        ) : (
-          <div>
-            <Button
-              onClick={() => summaryMutation.mutate()}
-              className="cursor-pointer"
-              disabled={summaryMutation.isPending}
-            >
-              <HiSparkles />
-              {`Summarize ${productId}`}
-            </Button>
-            {summaryMutation.isPending && (
-              <div className="py-3">
-                <ReviewSkeleton />
-              </div>
-            )}
-            {summaryMutation.isError && (
-              <p className="text-red-500">
-                Cloud not summarize reviews, Try again!
-              </p>
-            )}
-          </div>
-        )}
+        <div className="flex">
+          {currentSummary ? (
+            <p>{currentSummary}</p>
+          ) : (
+            <div>
+              <Button
+                onClick={() => summaryMutation.mutate()}
+                className="cursor-pointer"
+                disabled={summaryMutation.isPending}
+              >
+                <HiSparkles />
+                {`Summarize ${productId}`}
+              </Button>
+              {summaryMutation.isPending && (
+                <div className="py-3">
+                  <ReviewSkeleton />
+                </div>
+              )}
+              {summaryMutation.isError && (
+                <p className="text-red-500">
+                  Cloud not summarize reviews, Try again!
+                </p>
+              )}
+            </div>
+          )}
+          <ModelSelector className="ml-auto" />
+        </div>
       </div>
+
       <div className="flex flex-col gap-5">
         {reviewsQuery.data?.reviews.map((review) => (
           <div key={review.id}>

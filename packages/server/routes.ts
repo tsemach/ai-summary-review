@@ -22,4 +22,8 @@ router.post(
   reviewController.summarizeReviews
 );
 
+router.get('/api/models', reviewController.getAllModels);
+router.get('/api/models/current', reviewController.getCurrentModel);
+router.post('/api/models/current', reviewController.setCurrentModel);
+
 export default router;

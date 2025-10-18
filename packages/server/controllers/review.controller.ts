@@ -2,6 +2,7 @@ import type { Request, Response } from 'express';
 import { reviewService } from '../services/review.service';
 import { prodyctRepository } from '../repositories/product.repository';
 import { reviewRepository } from '../repositories/review.repository';
+import { modelRepository } from '../repositories/model.repository';
 
 async function getProductReviews(req: Request, res: Response) {
   const productId = Number(req.params.id);
@@ -47,7 +48,41 @@ async function summarizeReviews(req: Request, res: Response) {
   res.json({ summary });
 }
 
+function getAllModels(req: Request, res: Response) {
+  return res.json(modelRepository.getAllModels());
+}
+
+function getCurrentModel(req: Request, res: Response) {
+  return res.json(modelRepository.getCurrentModel());
+}
+
+function setCurrentModel(req: Request, res: Response) {
+  if (!req.body) {
+    return res.status(400).json({ error: 'No model ID provided' });
+  }
+
+  if (typeof req.body !== 'object') {
+    return res.status(400).json({ error: 'Not json object' });
+  }
+
+  if (!req.body.modelId) {
+    return res.status(400).json({ error: 'No modelId provided' });
+  }
+
+  const { modelId } = req.body;
+
+  const model = modelRepository.setCurrentModel(modelId);
+  if (!model) {
+    return res.status(400).json({ error: 'Model does not exist' });
+  }
+
+  return res.json(model);
+}
+
 export const reviewController = {
   getProductReviews,
   summarizeReviews,
+  getAllModels,
+  getCurrentModel,
+  setCurrentModel,
 };
